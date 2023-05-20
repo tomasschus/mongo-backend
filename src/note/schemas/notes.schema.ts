@@ -5,6 +5,10 @@ export type NoteDocument = Note & Document;
 
 @Schema()
 export class Note {
+
+  @Prop()
+  userId: string;
+
   @Prop()
   title: string;
 

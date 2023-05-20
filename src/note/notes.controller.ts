@@ -30,6 +30,11 @@ export class NotesController {
     return this.notesService.findAll(request);
   }
 
+  @Get('user/:userId')
+  findAllByUserId(@Param('userId') userId: string) {
+    return this.notesService.findAllByUserId(userId);
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseObjectIdPipe) id: string) {
     return this.notesService.findOne(id);

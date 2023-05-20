@@ -1,5 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 export class CreateNoteDto {
+  @ApiProperty({ example: '23d23d23-d23p-3223-d23d2d32' })
+  userId: string;
+
   @ApiProperty({ example: 'Title example' })
   title: string;
 

@@ -23,6 +23,13 @@ export class NotesService {
       .exec();
   }
 
+  async findAllByUserId(userId: String): Promise<Note[]> {
+    return this.noteModel
+      .find({userId})
+      .setOptions({ sanitizeFilter: true })
+      .exec();
+  }
+
   async findOne(id: string): Promise<Note> {
     return this.noteModel
       .findOne({ _id: id })
