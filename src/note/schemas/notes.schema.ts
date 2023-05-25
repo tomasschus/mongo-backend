@@ -9,10 +9,10 @@ export class Note {
   _id: Types.ObjectId
 
 
-  @Prop()
+  @Prop({required: true})
   userId: string;
 
-  @Prop()
+  @Prop({unique: true, required: true})
   noteUUID: string;
 
   @Prop()
@@ -35,6 +35,9 @@ export class Note {
 
   @Prop()
   closed: boolean;
+
+  @Prop()
+  deleted: boolean;
 
   @Prop()
   expiration: Date;

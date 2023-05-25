@@ -31,6 +31,9 @@ export class CreateNoteDto {
   @ApiProperty({ example: false })
   closed?: boolean;
 
+  @ApiProperty({ example: false })
+  deleted?: boolean;
+
   @ApiProperty()
   expiration?: Date | undefined; // Marcar como opcional y proporcionar valor predeterminado
 

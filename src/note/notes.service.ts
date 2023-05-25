@@ -44,16 +44,26 @@ export class NotesService {
       throw new Error(`Document with ID ${id} does not exist.`);
     }
   
-    const res = await this.noteModel.findByIdAndUpdate(id, updateNoteDto, {
-      new: true,
-    }).exec();
+    const res = await this.noteModel.findByIdAndUpdate(id, updateNoteDto).exec();
   
     console.log(id, res);
     return res;
   }  
 
-  async remove(id: Types.ObjectId) {
-    return this.noteModel.findByIdAndRemove(id).exec();
+  async remove(noteUUID: string) {
+    return this.noteModel.findOneAndRemove({noteUUID}).exec();
   }
 
+
+  async setDeletedByNoteUUID(noteUUID: string) {
+    const note = await this.noteModel
+      .findOne({noteUUID})
+      .setOptions({ sanitizeFilter: true })
+      .exec();
+
+    if (note) {
+      note.deleted = true;
+      const res = await this.noteModel.findByIdAndUpdate(note.id, note).exec();
+    }
+  }  
 }
