@@ -1,13 +1,19 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { HydratedDocument, SchemaTypes, Types } from 'mongoose';
 
-export type NoteDocument = Note & Document;
+export type NoteDocument = HydratedDocument<Note>;
 
 @Schema()
 export class Note {
+  @Prop({ type: SchemaTypes.ObjectId })
+  _id: Types.ObjectId
+
 
   @Prop()
   userId: string;
+
+  @Prop()
+  noteUUID: string;
 
   @Prop()
   title: string;
@@ -32,6 +38,9 @@ export class Note {
 
   @Prop()
   expiration: Date;
+
+  @Prop()
+  lastModified: Date;
 }
 
 export const NoteSchema = SchemaFactory.createForClass(Note);
