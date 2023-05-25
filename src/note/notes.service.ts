@@ -52,8 +52,8 @@ export class NotesService {
     return res;
   }  
 
-  async remove(id: string) {
-    return this.noteModel.findByIdAndRemove({ _id: id }).exec();
+  async remove(id: Types.ObjectId) {
+    return this.noteModel.findByIdAndRemove(id).exec();
   }
 
 }

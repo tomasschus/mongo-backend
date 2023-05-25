@@ -12,7 +12,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
-import { UpdateNoteDto } from './dto/update-note.dto';
+import { SyncNoteDto, UpdateNoteDto } from './dto/update-note.dto';
 import { ParseObjectIdPipe } from '../utilities/parse-object-id-pipe.pipe';
 import { isGivenNoteAfter } from 'src/helpers/isGivenNoteAfter';
 import { Types } from 'mongoose';
@@ -24,28 +24,18 @@ export class NotesController {
     private readonly notesService: NotesService,
   ) { }
 
-  // @Post()
-  // create(@Body() createNoteDto: CreateNoteDto) {
-  //   return this.notesService.create(createNoteDto);
-  // }
-
-  // @Get()
-  // findAll(@Req() request: Request) {
-  //   return this.notesService.findAll(request);
-  // }
-
   @Post('sync/:userId')
   async syncNotesByUserId(
     @Param('userId') userId: string,
-    @Body() notesDto: UpdateNoteDto[]
+    @Body() syncNotes: SyncNoteDto
   ) {
     try {
       const notes = await this.notesService.findAllByUserId(userId);
+      const {toSyncNotes, deletedNotes} = syncNotes;
   
-      if (notes && notesDto.length) {
-        const promises = notesDto.map(async (syncNote) => {
+      if (notes && toSyncNotes.length) {
+        const promises = toSyncNotes.map(async (syncNote) => {
           const noteAlreadySaved = notes.find(savedNote => savedNote.noteUUID === syncNote.noteUUID);
-          console.log(noteAlreadySaved)
           if (!noteAlreadySaved) {
             // La nota no existe, crearla
             const createNoteDto: CreateNoteDto = {
@@ -81,30 +71,16 @@ export class NotesController {
   
         await Promise.all(promises);
       }
+
+      if (deletedNotes && deletedNotes.length) {
+        await Promise.all(deletedNotes.map(noteId => this.notesService.remove(noteId)));
+      }      
+
     } catch (error) {
       console.error(error);
     }
   
     return await this.notesService.findAllByUserId(userId);
   }
-  
-
-  // @Get(':id')
-  // findOne(@Param('id', ParseObjectIdPipe) id: string) {
-  //   return this.notesService.findOne(id);
-  // }
-
-  // @Patch(':id')
-  // update(
-  //   @Param('id', ParseObjectIdPipe) id: Types.ObjectId,
-  //   @Body() updateNoteDto: UpdateNoteDto,
-  // ) {
-  //   return this.notesService.update(id, updateNoteDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id', ParseObjectIdPipe) id: string) {
-  //   return this.notesService.remove(id);
-  // }
 
 }
