@@ -50,8 +50,8 @@ export class NotesService {
     return res;
   }
 
-  async remove(noteUUID: string) {
-    return this.noteModel.findOneAndRemove({ noteUUID }).exec();
+  async deleteByUserIdAndNoteUUID(userId: string, noteUUID: string) {
+    return this.noteModel.findOneAndRemove({ userId, noteUUID, deleted: true }).exec();
   }
 
 
@@ -63,7 +63,7 @@ export class NotesService {
 
     if (note) {
       note.deleted = true;
-      await this.noteModel.findByIdAndUpdate(note.id, note).exec();
+      note.save();
     }
   }
 
@@ -78,8 +78,6 @@ export class NotesService {
     }
 
     findedNote.deleted = false;
-    const res = await this.noteModel.findByIdAndUpdate(findedNote.id, findedNote).exec();
-
-    return res;
+    findedNote.save();
   }
 }

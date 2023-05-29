@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Param } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, Delete } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
@@ -90,6 +90,15 @@ export class NotesController {
     @Body() restoreNoteDTO: RestoreNoteDto
   ) {
     const resNotes = await this.notesService.restoreNoteByNoteIdAndUserId(userId, restoreNoteDTO.noteUUID);
+    return resNotes;
+  }
+
+  @Delete(':userId/:noteUUID')
+  async deleteNote(
+    @Param('userId') userId: string,
+    @Param('noteUUID') noteUUID: string,
+  ) {
+    const resNotes = await this.notesService.deleteByUserIdAndNoteUUID(userId, noteUUID);
     return resNotes;
   }
 }
