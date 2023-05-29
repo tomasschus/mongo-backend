@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Param } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
@@ -71,7 +71,15 @@ export class NotesController {
     }
 
     const resNotes = await this.notesService.findAllByUserId(userId);
-    return resNotes.filter((note) => note.deleted === false)
+    return resNotes;
   }
 
+
+  @Get('deleted/:userId')
+  async getDeletedNotes(
+    @Param('userId') userId: string,
+  ) {
+    const resNotes = await this.notesService.findAllByUserId(userId, true);
+    return resNotes;
+  }
 }

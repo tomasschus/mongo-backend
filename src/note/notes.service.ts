@@ -25,9 +25,9 @@ export class NotesService {
       .exec();
   }
 
-  async findAllByUserId(userId: String): Promise<Note[]> {
+  async findAllByUserId(userId: String, deleted: boolean = false): Promise<Note[]> {
     return this.noteModel
-      .find({userId})
+      .find({userId, deleted})
       .setOptions({ sanitizeFilter: true })
       .exec();
   }
@@ -63,7 +63,7 @@ export class NotesService {
 
     if (note) {
       note.deleted = true;
-      const res = await this.noteModel.findByIdAndUpdate(note.id, note).exec();
+      await this.noteModel.findByIdAndUpdate(note.id, note).exec();
     }
   }  
 }
