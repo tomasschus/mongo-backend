@@ -10,7 +10,7 @@ import { Request } from 'express';
 export class NotesService {
   constructor(
     @InjectModel(Note.name) private readonly noteModel: Model<NoteDocument>,
-  ) {}
+  ) { }
 
   async create(createNoteDto: CreateNoteDto): Promise<Note> {
     const newNote = new this.noteModel(createNoteDto);
@@ -27,7 +27,7 @@ export class NotesService {
 
   async findAllByUserId(userId: String, deleted: boolean = false): Promise<Note[]> {
     return this.noteModel
-      .find({userId, deleted})
+      .find({ userId, deleted })
       .setOptions({ sanitizeFilter: true })
       .exec();
   }
@@ -43,21 +43,21 @@ export class NotesService {
     if (!documentExists) {
       throw new Error(`Document with ID ${id} does not exist.`);
     }
-  
+
     const res = await this.noteModel.findByIdAndUpdate(id, updateNoteDto).exec();
-  
+
     console.log(id, res);
     return res;
-  }  
+  }
 
   async remove(noteUUID: string) {
-    return this.noteModel.findOneAndRemove({noteUUID}).exec();
+    return this.noteModel.findOneAndRemove({ noteUUID }).exec();
   }
 
 
   async setDeletedByNoteUUID(noteUUID: string) {
     const note = await this.noteModel
-      .findOne({noteUUID})
+      .findOne({ noteUUID })
       .setOptions({ sanitizeFilter: true })
       .exec();
 
@@ -65,5 +65,21 @@ export class NotesService {
       note.deleted = true;
       await this.noteModel.findByIdAndUpdate(note.id, note).exec();
     }
-  }  
+  }
+
+  async restoreNoteByNoteIdAndUserId(userId: string, noteUUID: string): Promise<Note> {
+    const findedNote = await this.noteModel
+      .findOne({ userId, noteUUID, deleted: true })
+      .setOptions({ sanitizeFilter: true })
+      .exec();
+
+    if (!findedNote){
+      return;
+    }
+
+    findedNote.deleted = false;
+    const res = await this.noteModel.findByIdAndUpdate(findedNote.id, findedNote).exec();
+
+    return res;
+  }
 }

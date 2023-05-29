@@ -4,6 +4,7 @@ import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { SyncNoteDto, UpdateNoteDto } from './dto/update-note.dto';
 import { isGivenNoteAfter } from 'src/helpers/isGivenNoteAfter';
+import { RestoreNoteDto } from './dto/restore-note.dto';
 
 @Controller('notes')
 @ApiTags('note')
@@ -80,6 +81,15 @@ export class NotesController {
     @Param('userId') userId: string,
   ) {
     const resNotes = await this.notesService.findAllByUserId(userId, true);
+    return resNotes;
+  }
+
+  @Post('restore/:userId')
+  async restoreNote(
+    @Param('userId') userId: string,
+    @Body() restoreNoteDTO: RestoreNoteDto
+  ) {
+    const resNotes = await this.notesService.restoreNoteByNoteIdAndUserId(userId, restoreNoteDTO.noteUUID);
     return resNotes;
   }
 }
